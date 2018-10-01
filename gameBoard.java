@@ -3,10 +3,10 @@ package civilization;
 import java.util.Random;
 
 public class gameBoard{
-	private final ArrayList<Icon>[][] gameBoard;
+	private final Icon[][][] gameBoard;
 
 	public gameBoard{
-		gameBoard = new ArrayList<Icon>[20][20];
+		gameBoard = new Icon[20][20][4];
 		
 		/*
 		*	Fill gameBoard with Terrain.
@@ -16,6 +16,12 @@ public class gameBoard{
 	}
 
 	public ArrayList<Icon> getTile(int x, int y){
+		// returns ArrayList<Icon> of that tile.
+		// should not exceed 4 indices. 
+		// 0 = Terrain
+		// 1 = Building
+		// 2 = Unit
+		// 3 = Overflow Unit
 		return gameBoard[x][y];
 	}
 
