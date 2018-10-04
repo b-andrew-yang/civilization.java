@@ -3,10 +3,16 @@ package civilization;
 import java.util.Random;
 
 public class gameBoard{
-	private final Icon[][][] gameBoard;
+	private final Icon[][] terrainBoard;
+	private final Icon[][] buildingBoard;
+	private final Icon[][] unitBoard;
+	private final Icon[][] overflowUnit;
 
-	public gameBoard{
-		gameBoard = new Icon[20][20][4];
+	public gameBoard() {
+		terrainBoard = new Icon[20][20];
+		buildingBoard = new Icon[20][20];
+		unitBoard = new Icon[20][20];
+		overflowUnit = new Icon[20][20];
 		
 		/*
 		*	Fill gameBoard with Terrain.
@@ -15,36 +21,87 @@ public class gameBoard{
 		fillGameBoard();
 	}
 
-	public ArrayList<Icon> getTile(int x, int y){
-		// returns ArrayList<Icon> of that tile.
-		// should not exceed 4 indices. 
-		// 0 = Terrain
-		// 1 = Building
-		// 2 = Unit
-		// 3 = Overflow Unit
-		return gameBoard[x][y];
+	public static enum BoardType{
+		TERRAIN, BUILDING, UNIT, OVERFLOW
 	}
 
-	public void addToTile(int x, int y, Icon a){
-		gameBoard[x][y].add(a);
+	public Icon getTile(int x, int y, BoardType boardType){
+		if(boardType == null){
+			throw new IllegalArgumentException("Please specify board type:");
+		}
+		
+		Icon tileIcon;
+
+		if(boardType == BoardType.TERRAIN){
+			tileIcon = terrainBoard[x][y];
+		}else if(boardType == BoardType.BUILDING){
+			tileIcon = buildingBoard[x][y];
+		}else if(boardType == BoardType.UNIT){
+			tileIcon = unitBoard[x][y];
+		}else if(boardType == BoardType.OVERFLOW){
+			tileIcon = overflowUnit[x][y];
+		}
+		return tileIcon;
 	}
 
-	public void removeFromTile(int x, int y, Icon a){
-		Iterator itr = gameBoard[x][y].iterator();
-		itr.next();
-			/*
-			*	Automatically skip first index of ArrayList
-			*	because that is the terrain which can't be 
-			*	removed or changed.
-			*/
-		while(itr.hasNext()){
-			Icon b = itr.next();
-			if(b.equals(a)){
-				/*
-				*	NEED TO DEFINE EQUALITY FOR ALL ICONS
-				*/
-				itr.remove();
-			}
+	public boolean addToTile(int x, int y, Icon a, BoardType boardtype){
+		boolean validAdd;
+
+		switch(boardtype){
+			case TERRAIN:
+				if(terrainBoard[x][y] == null){
+					terrainBoard[x][y] = a;
+					validAdd = true;
+				}else{
+					validAdd = false;
+					break;
+				}
+			case BUILDING:
+				if(buildingBoard[x][y] == null){
+					buildingBoard[x][y] = a;
+					validAdd = true;
+				}else{
+					validAdd = false;
+					break;
+				}
+			case UNIT:
+				if(unitBoard[x][y] == null){
+					unitBoard[x][y] = a;
+					validAdd = true;
+				}else{
+					validAdd = false;
+					break;
+				}
+			case OVERFLOW:
+				if(overflowUnit[x][y] == null){
+					overflowUnit[x][y] = a;
+
+					/*
+					*	TO DO: FORCE ONE UNIT TO MOVE BEFORE
+					*		   VALID ADD CAN BE TRUE
+					*/
+
+					validAdd = true;
+				}else{
+					validAdd = false;
+					break;
+				}
+		}
+		return validAdd;
+	}
+
+	public void removeFromTile(int x, int y, BoardType boardType){
+		/*
+		*	removeFromTile: Removes the designated type from the 
+		* 					corresponding board. No terrain remove
+		*					because they are final and cannot change.
+		*/
+		if(boardType == BoardType.BUILDING){
+			buildingBoard[x][y] = null;
+		}else if(boardType == BoardType.UNIT){
+			unitBoard[x][y] = null;
+		}else if(boardType == BoardType.OVERFLOW){
+			overflowUnit[x][y] == null;
 		}
 	}
 
